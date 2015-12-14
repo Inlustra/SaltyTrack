@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "casperjs": "latest",
+    "q": "^1.4.1",
+    "sequelize": "^3.14.2",
     "spooky": "^0.2.5"
   }
 }
