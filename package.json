@@ -10,9 +10,12 @@
     "grunt-contrib-nodeunit": "~0.4.1"
   },
   "dependencies": {
-    "casperjs": "latest",
+    "express": "^4.13.3",
+    "express-handlebars": "^2.0.1",
+    "jade": "^1.11.0",
+    "mysql": "^2.9.0",
     "q": "^1.4.1",
-    "sequelize": "^3.14.2",
-    "spooky": "^0.2.5"
+    "request": "latest",
+    "sequelize": "^3.14.2"
   }
 }
