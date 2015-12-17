@@ -30,13 +30,16 @@ var Fight = sequelize.define('Fight', {
     },
     finishedAt: Sequelize.DATE,
     redPlayerAmount: Sequelize.BIGINT,
-    bluePlayerAmount: Sequelize.BIGINT
+    bluePlayerAmount: Sequelize.BIGINT,
+    redPlayerId: {type: Sequelize.INTEGER, defaultValue: null, allowNull: true},
+    bluePlayerId: {type: Sequelize.INTEGER, defaultValue: null, allowNull: true},
+    winningPlayerId: {type: Sequelize.INTEGER, defaultValue: null, allowNull: true}
 }, {
     scopes: {
         winning: function (id) {
             return {
                 where: {
-                    winner: id
+                    winningPlayerId: id
                 }
             }
         }
@@ -47,23 +50,16 @@ Fight.belongsTo(Player, {as: 'RedPlayer', foreignKey: 'redPlayerId'});
 Fight.belongsTo(Player, {as: 'BluePlayer', foreignKey: 'bluePlayerId'});
 Fight.belongsTo(Player, {
     as: 'WinningPlayer',
-    foreignKey: 'winner'
+    foreignKey: 'winningPlayerId'
 });
 Player.hasMany(Fight, {as: 'RedPlayer', foreignKey: 'redPlayerId'});
 Player.hasMany(Fight, {as: 'BluePlayer', foreignKey: 'bluePlayerId'});
-Player.hasMany(Fight, {as: 'WinningPlayer', foreignKey: 'winner'});
-Player.hasMany(Fight.scope('winning'), {as: 'winningFights'});
+Player.hasMany(Fight, {as: 'WinningPlayer', foreignKey: 'winningPlayerId'});
 
 module.exports = {
     Player: Player,
     Fight: Fight,
     start: function (drop) {
-        if (drop) {
-            sequelize.dropAllSchemas({logging: console.log}).then(function () {
-                sequelize.sync({logging: console.log});
-            });
-        } else {
-            sequelize.sync({logging: console.log});
-        }
+        sequelize.sync({logging: console.log, force: drop});
     }
 };

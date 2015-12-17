@@ -3,35 +3,38 @@ var app = express();
 var updatesalty = require('./updatesalty');
 var exphbs = require('express-handlebars');
 var queries = require('./queries');
+var models = require('./models');
+
+var Q = require('q');
 
 
 app.set('views', './views');
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
+app.use(express.static('public'));
 
 app.get('/', function (req, res) {
+    res.render('index');
+});
+
+app.get('/status', function (req, res) {
     var fight = updatesalty.getCurrentFight();
-    var redPlayer;
-    var bluePlayer;
-    var redPlayerWins;
-    queries.getPlayer(fight.redPlayerId).then(function (redPlayerObj) {
-        redPlayer = redPlayerObj;
-
-    }).then(function () {
-        queries.getPlayer(fight.bluePlayerId).then(function (bluePlayerObj) {
-            bluePlayer = bluePlayerObj;
-        }).then(function () {
-            redPlayer.getWinningFights().then(function (data) {
-                redPlayerWins = data.length;
-                res.render('index', {
-                    RedPlayer: redPlayer.name,
-                    redPlayerWins: redPlayerWins,
-                    BluePlayer: bluePlayer.name
+    Q.all([queries.getPlayerById(fight.redPlayerId),
+            queries.getPlayerById(fight.bluePlayerId)])
+        .spread(function (redPlayer, bluePlayer) {
+            return Q.all([queries.getPlayerWins(redPlayer.id),
+                    queries.getPlayerWins(bluePlayer.id)])
+                .spread(function (redPlayerWins, bluePlayerWins) {
+                    var data = {
+                        currentFight: fight,
+                        redPlayer: redPlayer,
+                        bluePlayer: bluePlayer,
+                        redPlayerWins: redPlayerWins,
+                        bluePlayerWins: bluePlayerWins
+                    };
+                    res.json(data);
                 });
-            })
-        })
-    });
-
+        });
 });
 
 function start() {
