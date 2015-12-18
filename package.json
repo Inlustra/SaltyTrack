@@ -6,12 +6,13 @@
   "author": "Scotch",
   "devDependencies": {
     "grunt": "~0.4.5",
-    "grunt-contrib-jshint": "~0.10.0",
-    "grunt-contrib-nodeunit": "~0.4.1"
+    "grunt-contrib-jshint": "^0.11.3",
+    "grunt-contrib-nodeunit": "~0.4.1",
+    "grunt-include-source": "^0.7.1",
+    "grunt-wiredep": "^2.0.0"
   },
   "dependencies": {
     "express": "^4.13.3",
-    "express-handlebars": "^2.0.1",
     "jade": "^1.11.0",
     "mysql": "^2.9.0",
     "q": "^1.4.1",

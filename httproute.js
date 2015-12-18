@@ -1,21 +1,13 @@
 var express = require('express');
 var app = express();
 var updatesalty = require('./updatesalty');
-var exphbs = require('express-handlebars');
 var queries = require('./queries');
 var models = require('./models');
 
 var Q = require('q');
 
 
-app.set('views', './views');
-app.engine('handlebars', exphbs({defaultLayout: 'main'}));
-app.set('view engine', 'handlebars');
 app.use(express.static('public'));
-
-app.get('/', function (req, res) {
-    res.render('index');
-});
 
 app.get('/status', function (req, res) {
     var fight = updatesalty.getCurrentFight();
