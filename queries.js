@@ -68,15 +68,24 @@ function getPlayer(id) {
     });
 }
 
-function getPlayerWins(player) {
-    return models.Fight.scope({method: ['winning', player]}).findAll();
+function playerWins(player) {
+    return models.Fight.scope({method: ['winning', player]});
 }
 
+function noWinnerMatches() {
+    return models.Fight.scope({method: ['nowinner']});
+}
+
+function playerMatches(player) {
+    return models.Fight.scope({method: ['matches', player]});
+}
 
 module.exports = {
     createFight: createFight,
     getPlayer: getOrCreatePlayer,
     currentFight: currentFight,
     getPlayerById: getPlayer,
-    getPlayerWins: getPlayerWins
+    getPlayerWins: playerWins,
+    getPlayerMatches: playerMatches,
+    noWinnerMatches: noWinnerMatches
 };

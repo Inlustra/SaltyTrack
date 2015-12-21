@@ -14,15 +14,19 @@ app.get('/status', function (req, res) {
     Q.all([queries.getPlayerById(fight.redPlayerId),
             queries.getPlayerById(fight.bluePlayerId)])
         .spread(function (redPlayer, bluePlayer) {
-            return Q.all([queries.getPlayerWins(redPlayer.id),
-                    queries.getPlayerWins(bluePlayer.id)])
-                .spread(function (redPlayerWins, bluePlayerWins) {
+            return Q.all([queries.getPlayerWins(redPlayer.id).count(),
+                    queries.getPlayerWins(bluePlayer.id).count(),
+                    queries.getPlayerMatches(bluePlayer.id).findAll(),
+                    queries.getPlayerMatches(redPlayer.id).findAll()])
+                .spread(function (redPlayerWins, bluePlayerWins, bluePlayerMatches, redPlayerMatches) {
                     var data = {
                         currentFight: fight,
                         redPlayer: redPlayer,
                         bluePlayer: bluePlayer,
                         redPlayerWins: redPlayerWins,
-                        bluePlayerWins: bluePlayerWins
+                        redPlayerMatches: redPlayerMatches,
+                        bluePlayerWins: bluePlayerWins,
+                        bluePlayerMatches: bluePlayerMatches
                     };
                     res.json(data);
                 });

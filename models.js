@@ -42,6 +42,27 @@ var Fight = sequelize.define('Fight', {
                     winningPlayerId: id
                 }
             }
+        },
+        nowinner: function () {
+            return {
+                where: {
+                    winningPlayerId: null
+                }
+            }
+        },
+        matches: function (id) {
+            return {
+                where: {
+                    $or: [
+                        {
+                            bluePlayerId: id
+                        },
+                        {
+                            redPlayerId: id
+                        }
+                    ]
+                }
+            }
         }
     }
 });

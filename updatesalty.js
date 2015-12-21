@@ -5,7 +5,10 @@ var queries = require('./queries');
 var Q = require('q');
 
 var player1, player2, currentFightObj, doStop = false, finished = false;
-
+String.prototype.replaceAll = function (find, replace) {
+    var str = this;
+    return str.replace(new RegExp(find, 'g'), replace);
+};
 function performRequest() {
     var deferred = Q.defer();
     request('https://www.saltybet.com/zdata.json', function (error, response, body) {
@@ -24,8 +27,8 @@ function performRequest() {
             });
             return;
         }
-        var player1Total = body.p1total.replace(',', '');
-        var player2Total = body.p2total.replace(',', '');
+        var player1Total = body.p1total.replaceAll(',','');
+        var player2Total = body.p2total.replaceAll(',','');
         var winner = null;
         if (body.status == "1") {
             winner = player1;

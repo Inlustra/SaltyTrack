@@ -1,0 +1,25 @@
+{
+  "name": "SaltyTrack",
+  "description": "Scraping SaltyBet for stuffs",
+  "main": "server.js",
+  "authors": [
+    "Thomas Nairn"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/Inlustra/SaltyTrack",
+  "moduleType": [
+    "node"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-ui-router": "~0.2.15"
+  }
+}
