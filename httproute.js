@@ -10,27 +10,33 @@ var Q = require('q');
 app.use(express.static('public'));
 
 app.get('/status', function (req, res) {
-    var fight = updatesalty.getCurrentFight();
-    Q.all([queries.getPlayerById(fight.redPlayerId),
-            queries.getPlayerById(fight.bluePlayerId)])
-        .spread(function (redPlayer, bluePlayer) {
-            return Q.all([queries.getPlayerWins(redPlayer.id).count(),
-                    queries.getPlayerWins(bluePlayer.id).count(),
-                    queries.getPlayerMatches(bluePlayer.id).findAll(),
-                    queries.getPlayerMatches(redPlayer.id).findAll()])
-                .spread(function (redPlayerWins, bluePlayerWins, bluePlayerMatches, redPlayerMatches) {
-                    var data = {
-                        currentFight: fight,
-                        redPlayer: redPlayer,
-                        bluePlayer: bluePlayer,
-                        redPlayerWins: redPlayerWins,
-                        redPlayerMatches: redPlayerMatches,
-                        bluePlayerWins: bluePlayerWins,
-                        bluePlayerMatches: bluePlayerMatches
-                    };
-                    res.json(data);
-                });
-        });
+    queries.currentFight().then(function (fight) {
+        Q.all([queries.getPlayerById(fight.redPlayerId),
+                queries.getPlayerById(fight.bluePlayerId)])
+            .spread(function (redPlayer, bluePlayer) {
+                return Q.all([queries.getPlayerWins(redPlayer.id).count(),
+                        queries.getPlayerWins(bluePlayer.id).count(),
+                        queries.getPlayerMatches(bluePlayer.id).findAll(),
+                        queries.getPlayerMatches(redPlayer.id).findAll()])
+                    .spread(function (redPlayerWins, bluePlayerWins, bluePlayerMatches, redPlayerMatches) {
+                        var data = {
+                            currentFight: fight,
+                            red: {
+                                player: redPlayer,
+                                wins: redPlayerWins,
+                                matches: redPlayerMatches
+                            },
+                            blue: {
+                                player: bluePlayer,
+                                wins: bluePlayerWins,
+                                matches: bluePlayerMatches
+                            },
+                        };
+                        res.json(data);
+                    });
+            });
+    })
+
 });
 
 function start() {

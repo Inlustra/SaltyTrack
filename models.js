@@ -14,6 +14,9 @@ var Player = sequelize.define('Player', {
     },
     name: Sequelize.STRING
 }, {
+    defaultScope: {
+        attributes: ['id', 'name'],
+    },
     indexes: [
         {
             unique: true,
@@ -33,8 +36,19 @@ var Fight = sequelize.define('Fight', {
     bluePlayerAmount: Sequelize.BIGINT,
     redPlayerId: {type: Sequelize.INTEGER, defaultValue: null, allowNull: true},
     bluePlayerId: {type: Sequelize.INTEGER, defaultValue: null, allowNull: true},
-    winningPlayerId: {type: Sequelize.INTEGER, defaultValue: null, allowNull: true}
+    winningPlayerId: {type: Sequelize.INTEGER, defaultValue: null, allowNull: true},
+    duration: {
+        type: Sequelize.VIRTUAL,
+        get: function () {
+            var finished = this.get('finishedAt');
+            var end = finished ? new Date(finished) : new Date();
+            return (end.getTime() - new Date(this.createdAt).getTime()) / 1000;
+        }
+    }
 }, {
+    defaultScope: {
+        attributes: ['duration', 'redPlayerAmount', 'bluePlayerAmount', 'redPlayerId', 'bluePlayerId', 'winningPlayerId', 'finishedAt', 'createdAt']
+    },
     scopes: {
         winning: function (id) {
             return {
@@ -52,6 +66,7 @@ var Fight = sequelize.define('Fight', {
         },
         matches: function (id) {
             return {
+                attributes: ['redPlayerAmount', 'bluePlayerAmount', 'winningPlayerId', 'duration'],
                 where: {
                     $or: [
                         {
@@ -60,7 +75,12 @@ var Fight = sequelize.define('Fight', {
                         {
                             redPlayerId: id
                         }
-                    ]
+                    ],
+                    $and: {
+                        winningPlayerId: {
+                            $ne: null
+                        }
+                    }
                 }
             }
         }

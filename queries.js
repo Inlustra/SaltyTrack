@@ -30,33 +30,18 @@ function createPlayer(name, deferred) {
 }
 
 function createFight(red, blue, amount) {
-    var deferred = Q.defer();
-    getOrCreatePlayer(blue)
-        .then(function (bluePlayer) {
-            getOrCreatePlayer(red)
-                .then(function (redPlayer) {
-                    models.Fight.create({
-                        redPlayerId: redPlayer.id,
-                        bluePlayerId: bluePlayer.id
-                    }).then(function (fight) {
-                        deferred.resolve(fight);
-                    }, function (error) {
-                        deferred.reject(error);
-                    })
-                }, function (error) {
-                    deferred.reject(error);
-                });
-        }, function (error) {
-            deferred.reject(error);
+    return Q.all([getOrCreatePlayer(blue), getOrCreatePlayer(red)])
+        .spread(function (bluePlayer, redPlayer) {
+            return models.Fight.create({
+                redPlayerId: redPlayer.id,
+                bluePlayerId: bluePlayer.id
+            });
         });
-    return deferred.promise;
 }
 
 function currentFight() {
     return models.Fight.find({
-        where: {
-            finishedAt: null
-        }
+        order: [['createdAt', 'DESC']]
     });
 }
 
