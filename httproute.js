@@ -1,4 +1,5 @@
 var express = require('express');
+var cors = require('cors')
 var app = express();
 var updatesalty = require('./updatesalty');
 var queries = require('./queries');
@@ -7,6 +8,7 @@ var models = require('./models');
 var Q = require('q');
 
 
+app.use(cors());
 app.use(express.static('public'));
 
 app.get('/status', function (req, res) {
