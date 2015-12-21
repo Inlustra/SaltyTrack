@@ -12,5 +12,5 @@ saltyTrack.controller('HomeController', ['$scope', '$http', '$interval', functio
     }
 
     refresh();
-    $interval(refresh, 5000, 0);
+    $interval(refresh, 5000, 0)
 }]);
