@@ -8,12 +8,12 @@
     mdl-color--red
     mdl-shadow--1dp">
             <div class="mdl-card--expand p-20">
-                <h3 class="t-center mdl-color-text--white">{{players.red.name}}</h3>
+                <h3 class="t-center mdl-color-text--white">{{data.red.player.name}}</h3>
             </div>
             <div class="mdl-card__actions mdl-card--border">
                 <i class="material-icons mdl-color-text--white">attach_money</i>
                 <div class="mdl-cell--middle mdl-color-text--red-100">
-                    {{currentFight.redPlayerAmount}}
+                    {{data.currentFight.redPlayerAmount}}
                 </div>
                 <div class="mdl-layout-spacer"></div>
             </div>
@@ -25,12 +25,12 @@
     mdl-color--blue
     mdl-shadow--1dp">
             <div class="mdl-card--expand p-20">
-                <h3 class="t-center mdl-color-text--white">{{players.blue.name}}</h3>
+                <h3 class="t-center mdl-color-text--white">{{data.blue.player.name}}</h3>
             </div>
             <div class="mdl-card__actions mdl-card--border">
                 <i class="material-icons mdl-color-text--white">attach_money</i>
                 <div class="mdl-cell--middle mdl-color-text--blue-100">
-                    {{currentFight.bluePlayerAmount}}
+                    {{data.currentFight.bluePlayerAmount}}
                 </div>
                 <div class="mdl-layout-spacer"></div>
             </div>

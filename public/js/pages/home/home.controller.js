@@ -7,12 +7,7 @@ saltyTrack.controller('HomeController', ['$scope', '$http', '$interval', functio
 
     function refresh() {
         $http.get('/status').then(function (data) {
-            data = data.data;
-            $scope.currentFight = data.currentFight;
-            $scope.players.red = data.redPlayer;
-            $scope.players.red.win = data.redPlayerWins;
-            $scope.players.blue = data.bluePlayer;
-            $scope.players.red.win = data.bluePlayerWins;
+            $scope.data = data.data;
         });
     }
 
