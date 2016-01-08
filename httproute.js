@@ -28,8 +28,8 @@ app.get('/status', function (req, res) {
             .spread(function (redPlayer, bluePlayer) {
                 return Q.all([queries.getPlayerWins(redPlayer.id).count(),
                         queries.getPlayerWins(bluePlayer.id).count(),
-                        queries.getPlayerMatches(bluePlayer.id).findAll(),
-                        queries.getPlayerMatches(redPlayer.id).findAll(),
+                        queries.getPlayerMatches(bluePlayer.id),
+                        queries.getPlayerMatches(redPlayer.id),
                         queries.getPlayerRoundup(redPlayer.id),
                         queries.getPlayerRoundup(bluePlayer.id)])
                     .spread(function (redPlayerWins, bluePlayerWins, bluePlayerMatches, redPlayerMatches,
