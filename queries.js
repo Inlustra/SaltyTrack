@@ -66,16 +66,16 @@ function playerMatches(player) {
 }
 
 function playerRoundup(player) {
-    return models.sequelize.query('SELECT *,(WinCount / MatchCount) as WinRatio FROM (SELECT COUNT(fight.id) as MatchCount, AVG(fight.finishedAt - fight.createdAt) as AverageDuration,' +
-        'AVG(IF(bPlayer.id = :playerId,bluePlayerAmount,0)+' +
-        'IF(rPlayer.id = :playerId,redPlayerAmount,0)) as AverageBets,' +
-        'SUM(IF(wPlayer.id = :playerId,1,0)) as WinCount' +
-        'FROM Fights fight' +
-        'INNER JOIN Players bPlayer ON fight.bluePlayerId = bPlayer.id' +
-        'INNER JOIN Players rPlayer ON fight.redPlayerId = rPlayer.id' +
-        'INNER JOIN Players wPlayer ON fight.winningPlayerId = wPlayer.id' +
-        'WHERE rPlayer.id = :playerId OR bPlayer.id = :playerId) as Query', {
-        replacements: {playerId: player}, type: sequelize.QueryTypes.SELECT
+    return models.sequelize.query('SELECT *,(WinCount / MatchCount) as WinRatio FROM (SELECT COUNT(fight.id) as MatchCount, AVG(fight.finishedAt - fight.createdAt) as AverageDuration, ' +
+        'AVG(IF(bPlayer.id = :playerId,bluePlayerAmount,0)+ ' +
+        'IF(rPlayer.id = :playerId,redPlayerAmount,0)) as AverageBets, ' +
+        'SUM(IF(wPlayer.id = :playerId,1,0)) as WinCount ' +
+        'FROM Fights fight ' +
+        'INNER JOIN Players bPlayer ON fight.bluePlayerId = bPlayer.id ' +
+        'INNER JOIN Players rPlayer ON fight.redPlayerId = rPlayer.id ' +
+        'INNER JOIN Players wPlayer ON fight.winningPlayerId = wPlayer.id ' +
+        'WHERE rPlayer.id = :playerId OR bPlayer.id = :playerId) as Query ', {
+        replacements: {playerId: player}, type: models.sequelize.QueryTypes.SELECT
     })
 }
 

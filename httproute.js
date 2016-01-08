@@ -10,7 +10,17 @@ var Q = require('q');
 
 app.use(cors());
 app.use(express.static('public'));
-
+app.get('/player/:id', function (req, res) {
+    console.log(req.params.id);
+    Q.all([queries.getPlayerById(req.params.id), queries.getPlayerRoundup(req.params.id)])
+        .spread(function (player, data) {
+            res.json({
+                id: player.id,
+                name: player.name,
+                roundup: data
+            });
+        });
+});
 app.get('/status', function (req, res) {
     queries.currentFight().then(function (fight) {
         Q.all([queries.getPlayerById(fight.redPlayerId),
@@ -32,13 +42,13 @@ app.get('/status', function (req, res) {
                                 player: redPlayer,
                                 wins: redPlayerWins,
                                 matches: redPlayerMatches,
-                                roundup: redPlayerRoundup
+                                roundup: redPlayerRoundup[0]
                             },
                             blue: {
                                 player: bluePlayer,
                                 wins: bluePlayerWins,
                                 matches: bluePlayerMatches,
-                                roundup: bluePlayerRoundup
+                                roundup: bluePlayerRoundup[0]
                             }
                         };
                         res.json(data);
