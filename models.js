@@ -17,6 +17,9 @@ var Player = sequelize.define('Player', {
     defaultScope: {
         attributes: ['id', 'name'],
     },
+    scopes: {
+        roundup: ""
+    },
     indexes: [
         {
             unique: true,
@@ -102,5 +105,6 @@ module.exports = {
     Fight: Fight,
     start: function (drop) {
         sequelize.sync({logging: console.log, force: drop});
-    }
+    },
+    sequelize: sequelize
 };

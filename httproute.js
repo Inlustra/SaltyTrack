@@ -19,20 +19,27 @@ app.get('/status', function (req, res) {
                 return Q.all([queries.getPlayerWins(redPlayer.id).count(),
                         queries.getPlayerWins(bluePlayer.id).count(),
                         queries.getPlayerMatches(bluePlayer.id).findAll(),
-                        queries.getPlayerMatches(redPlayer.id).findAll()])
-                    .spread(function (redPlayerWins, bluePlayerWins, bluePlayerMatches, redPlayerMatches) {
+                        queries.getPlayerMatches(redPlayer.id).findAll(),
+                        queries.getPlayerRoundup(redPlayer.id),
+                        queries.getPlayerRoundup(bluePlayer.id)])
+                    .spread(function (redPlayerWins, bluePlayerWins, bluePlayerMatches, redPlayerMatches,
+                                      redPlayerRoundup,
+                                      bluePlayerRoundup) {
+
                         var data = {
                             currentFight: fight,
                             red: {
                                 player: redPlayer,
                                 wins: redPlayerWins,
-                                matches: redPlayerMatches
+                                matches: redPlayerMatches,
+                                roundup: redPlayerRoundup
                             },
                             blue: {
                                 player: bluePlayer,
                                 wins: bluePlayerWins,
-                                matches: bluePlayerMatches
-                            },
+                                matches: bluePlayerMatches,
+                                roundup: bluePlayerRoundup
+                            }
                         };
                         res.json(data);
                     });
