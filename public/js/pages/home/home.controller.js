@@ -6,7 +6,7 @@ saltyTrack.controller('HomeController', ['$scope', '$http', '$interval', functio
     };
 
     function refresh() {
-        $http.get('http://localhost:9090/status').then(function (data) {
+        $http.get('http://salty.thenairn.com/status').then(function (data) {
             $scope.data = data.data;
         });
     }
