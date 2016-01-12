@@ -1,6 +1,6 @@
 var Sequelize = require('sequelize');
 
-var sequelize = new Sequelize('SALTYTRACK', 'user', 'gaN4myhRe6', {
+var sequelize = new Sequelize('SaltyTrack', 'user', 'gaN4myhRe6', {
     host: 'box.thenairn.com',
     dialect: 'mysql',
     logging: console.log
