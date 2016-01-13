@@ -10,7 +10,17 @@ var Q = require('q');
 
 app.use(cors());
 app.use(express.static('public'));
-
+app.get('/player/:id', function (req, res) {
+    console.log(req.params.id);
+    Q.all([queries.getPlayerById(req.params.id), queries.getPlayerRoundup(req.params.id)])
+        .spread(function (player, data) {
+            res.json({
+                id: player.id,
+                name: player.name,
+                roundup: data
+            });
+        });
+});
 app.get('/status', function (req, res) {
     queries.currentFight().then(function (fight) {
         Q.all([queries.getPlayerById(fight.redPlayerId),
@@ -18,21 +28,28 @@ app.get('/status', function (req, res) {
             .spread(function (redPlayer, bluePlayer) {
                 return Q.all([queries.getPlayerWins(redPlayer.id).count(),
                         queries.getPlayerWins(bluePlayer.id).count(),
-                        queries.getPlayerMatches(bluePlayer.id).findAll(),
-                        queries.getPlayerMatches(redPlayer.id).findAll()])
-                    .spread(function (redPlayerWins, bluePlayerWins, bluePlayerMatches, redPlayerMatches) {
+                        queries.getPlayerMatches(bluePlayer.id),
+                        queries.getPlayerMatches(redPlayer.id),
+                        queries.getPlayerRoundup(redPlayer.id),
+                        queries.getPlayerRoundup(bluePlayer.id)])
+                    .spread(function (redPlayerWins, bluePlayerWins, bluePlayerMatches, redPlayerMatches,
+                                      redPlayerRoundup,
+                                      bluePlayerRoundup) {
+
                         var data = {
                             currentFight: fight,
                             red: {
                                 player: redPlayer,
                                 wins: redPlayerWins,
-                                matches: redPlayerMatches
+                                matches: redPlayerMatches,
+                                roundup: redPlayerRoundup[0]
                             },
                             blue: {
                                 player: bluePlayer,
                                 wins: bluePlayerWins,
-                                matches: bluePlayerMatches
-                            },
+                                matches: bluePlayerMatches,
+                                roundup: bluePlayerRoundup[0]
+                            }
                         };
                         res.json(data);
                     });

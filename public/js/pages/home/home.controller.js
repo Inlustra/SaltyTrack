@@ -10,8 +10,8 @@ saltyTrack.controller('HomeController', ['$scope', '$http', '$interval', functio
             $scope.data = data.data;
         });
     }
+    $scope.Math = window.Math;
 
-    
     refresh();
     $interval(refresh, 5000, 0);
 }]);

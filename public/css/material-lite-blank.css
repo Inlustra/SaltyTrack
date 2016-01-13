@@ -12644,8 +12644,7 @@ address {
   .mdl-grid.mdl-grid-p-15 {
     padding: 15px; }
 
-.mdl-cell {
-  padding-left: 15px; }
+.mdl-cell { }
 
 .mdl-grid .mdl-cell:first-child {
   padding-left: 0px; }

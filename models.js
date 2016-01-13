@@ -1,6 +1,6 @@
 var Sequelize = require('sequelize');
 
-var sequelize = new Sequelize('SALTYTRACK', 'user', 'gaN4myhRe6', {
+var sequelize = new Sequelize('SaltyTrack', 'user', 'gaN4myhRe6', {
     host: 'box.thenairn.com',
     dialect: 'mysql',
     logging: console.log
@@ -16,6 +16,9 @@ var Player = sequelize.define('Player', {
 }, {
     defaultScope: {
         attributes: ['id', 'name'],
+    },
+    scopes: {
+        roundup: ""
     },
     indexes: [
         {
@@ -103,5 +106,6 @@ module.exports = {
     Fight: Fight,
     start: function (drop) {
         sequelize.sync({logging: console.log, force: drop});
-    }
+    },
+    sequelize: sequelize
 };

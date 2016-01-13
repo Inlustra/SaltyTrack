@@ -4,34 +4,108 @@
     mdl-cell--middle
     mdl-cell--6-col
     mdl-cell--stretch
-    mdl-color--red
     mdl-shadow--1dp">
-            <div class="mdl-card--expand p-20">
-                <h3 class="t-center mdl-color-text--white">{{data.red.player.name}}</h3>
+            <div class="mdl-card--expand p-20 mdl-color--red">
+                <h3 class="mdl-color-text--white mdl-card__title">{{data.red.player.name}}</h3>
+            </div>
+            <div class="mdl-card__supporting-text"> Recorded Matches:
+                {{data.red.roundup.MatchCount}}
+                <br/> Recorded Wins:
+                {{data.red.roundup.WinCount}}
+                <br/> Average Match Length:
+                {{data.red.roundup.AverageDuration.round(2)}}
+                <br/> Average Bet Amount:
+                {{data.red.roundup.AverageBets.round(2)}}
+                <br/> Average Win Ratio:
+                {{data.red.roundup.WinRatio.round(2)}}
+                <br/> Average Bet Ratio:
+                {{data.red.roundup.BetRatio.round(2)}}
             </div>
             <div class="mdl-card__actions mdl-card--border">
-                <i class="material-icons mdl-color-text--white">attach_money</i>
-                <div class="mdl-cell--middle mdl-color-text--red-100">
+                <i class="material-icons">attach_money</i>
+                <div class="mdl-cell--middle mdl-color-text--red">
                     {{data.currentFight.redPlayerAmount}}
                 </div>
                 <div class="mdl-layout-spacer"></div>
             </div>
         </div>
         <div class="mdl-cell
-    mdl-cell--6-col
     mdl-cell--middle
+    mdl-cell--6-col
     mdl-cell--stretch
-    mdl-color--blue
     mdl-shadow--1dp">
-            <div class="mdl-card--expand p-20">
-                <h3 class="t-center mdl-color-text--white">{{data.blue.player.name}}</h3>
+            <div class="mdl-card--expand p-20 mdl-color--blue">
+                <h3 class="mdl-color-text--white mdl-card__title">{{data.blue.player.name}}</h3>
+            </div>
+            <div class="mdl-card__supporting-text"> Recorded Matches:
+                {{data.blue.roundup.MatchCount}}
+                <br/> Recorded Wins:
+                {{data.blue.roundup.WinCount}}
+                <br/> Average Match Length:
+                {{data.blue.roundup.AverageDuration.round(2)}}
+                <br/> Average Bet Amount:
+                {{data.blue.roundup.AverageBets.round(2)}}
+                <br/> Average Win Ratio:
+                {{data.blue.roundup.WinRatio.round(2)}}
+                <br/> Average Bet Ratio:
+                {{data.blue.roundup.BetRatio.round(2)}}
             </div>
             <div class="mdl-card__actions mdl-card--border">
-                <i class="material-icons mdl-color-text--white">attach_money</i>
-                <div class="mdl-cell--middle mdl-color-text--blue-100">
+                <i class="material-icons">attach_money</i>
+                <div class="mdl-cell--middle mdl-color-text--blue">
                     {{data.currentFight.bluePlayerAmount}}
                 </div>
                 <div class="mdl-layout-spacer"></div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h3>Last matches:</h3>
+    </div>
+    <div class="mdl-grid">
+        <div class="mdl-cell mdl-cell--6-col">
+            <div class="mdl-grid">
+                <div ng-class="[{'mdl-color--red': match.WonGame},{'mdl-color--grey': !match.WonGame}]" class="mdl-cell
+                        mdl-cell--12-col
+                        mdl-cell--stretch
+                        mdl-shadow--1dp" ng-repeat="match in data.red.matches">
+                    <div class="mdl-card--expand p-20">
+                        <h3 class="t-center mdl-color-text--white">{{match.OpposingPlayerName}}<span
+                                class="mdl-layout--large-screen-only"> / {{data.red.player.name}}</span></h3>
+                    </div>
+                    <div class="mdl-card__actions mdl-card--border">
+                        <i class="material-icons mdl-color-text--white">attach_money</i>
+                        <div class="mdl-cell--middle">
+                            {{match.HomeBet >= match.OpposingBet ?
+                            Math.round((match.HomeBet / match.OpposingBet) * 10) / 10
+                            : 1 }}
+                        </div>
+                        <div class="mdl-layout-spacer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mdl-cell
+    mdl-cell--6-col">
+            <div class="mdl-grid">
+                <div ng-class="[{'mdl-color--blue': match.WonGame},{'mdl-color--grey': !match.WonGame}]" class="mdl-cell
+                        mdl-cell--12-col
+                        mdl-cell--stretch
+                        mdl-shadow--1dp" ng-repeat="match in data.blue.matches">
+                    <div class="mdl-card--expand p-20">
+                        <h3 class="t-center mdl-color-text--white">{{match.OpposingPlayerName}}<span
+                                class="mdl-layout--large-screen-only"> / {{data.blue.player.name}}</span></h3>
+                    </div>
+                    <div class="mdl-card__actions mdl-card--border">
+                        <i class="material-icons mdl-color-text--white">attach_money</i>
+                        <div class="mdl-cell--middle">
+                            {{match.HomeBet >= match.OpposingBet ?
+                            Math.round((match.HomeBet / match.OpposingBet) * 10) / 10
+                            : 1 }}
+                        </div>
+                        <div class="mdl-layout-spacer"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
