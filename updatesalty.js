@@ -10,23 +10,29 @@ String.prototype.replaceAll = function (find, replace) {
     return str.replace(new RegExp(find, 'g'), replace);
 };
 
-function SaltyTrack () {
+function SaltyTrack() {
     this.player1 = null;
     this.player2 = null;
     this.currentFight = null;
 }
 
-SaltyTrack.prototype.getState = function() {
+SaltyTrack.prototype.getState = function () {
     var deferred = Q.defer();
     request('https://www.saltybet.com/state.json', function (error, response, body) {
-        body.p1total = body.p1total.replaceAll(',', '');
-        body.p2total = body.p2total.replaceAll(',', '');
         deferred.resolve(JSON.parse(body));
     });
     return deferred;
 };
 
-SaltyTrack.prototype.getZData = function() {
+SaltyTrack.prototype.transformState = function (fight) {
+    return {
+        status: fight.status,
+        redPlayerAmount: body.p1total.replaceAll(',', ''),
+        bluePlayerAmount: body.p2total.replaceAll(',', '')
+    };
+};
+
+SaltyTrack.prototype.getZData = function () {
     var deferred = Q.defer();
     request('https://www.saltybet.com/zdata.json', function (error, response, body) {
         body.p1total = body.p1total.replaceAll(',', '');
@@ -36,13 +42,13 @@ SaltyTrack.prototype.getZData = function() {
     return deferred;
 };
 
-SaltyTrack.prototype.update = function() {
+SaltyTrack.prototype.update = function () {
     Q.all(this.getState())
         .then(this.getFight)
         .then(this.checkWinner);
 };
 
-SaltyTrack.prototype.getFight = function(state) {
+SaltyTrack.prototype.getFight = function (state) {
     var deferred = Q.defer();
     var that = this;
     if (that.player1 != state.p1name || that.player2 != state.p2name) {
