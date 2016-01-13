@@ -9,8 +9,90 @@ String.prototype.replaceAll = function (find, replace) {
     var str = this;
     return str.replace(new RegExp(find, 'g'), replace);
 };
-function performRequest() {
+
+function SaltyTrack () {
+    this.player1 = null;
+    this.player2 = null;
+    this.currentFight = null;
+}
+
+SaltyTrack.prototype.getState = function() {
     var deferred = Q.defer();
+    request('https://www.saltybet.com/state.json', function (error, response, body) {
+        body.p1total = body.p1total.replaceAll(',', '');
+        body.p2total = body.p2total.replaceAll(',', '');
+        deferred.resolve(JSON.parse(body));
+    });
+    return deferred;
+};
+
+SaltyTrack.prototype.getZData = function() {
+    var deferred = Q.defer();
+    request('https://www.saltybet.com/zdata.json', function (error, response, body) {
+        body.p1total = body.p1total.replaceAll(',', '');
+        body.p2total = body.p2total.replaceAll(',', '');
+        deferred.resolve(JSON.parse(body));
+    });
+    return deferred;
+};
+
+SaltyTrack.prototype.update = function() {
+    Q.all(this.getState())
+        .then(this.getFight)
+        .then(this.checkWinner);
+};
+
+SaltyTrack.prototype.getFight = function(state) {
+    var deferred = Q.defer();
+    var that = this;
+    if (that.player1 != state.p1name || that.player2 != state.p2name) {
+        queries.createFight(player1, player2, state.status).then(function (fight) {
+            that.player1 = state.p1name;
+            that.player2 = state.p2name;
+            that.currentFight = fight;
+            deferred.resolve(that.currentFight);
+        }, function (error) {
+            console.log(error);
+            deferred.reject(error);
+        });
+    } else {
+        SaltyTrack.currentFight.update(updating).then(function (currentFight) {
+            deferred.resolve(currentFight);
+        }, function (error) {
+            console.log(error);
+            deferred.reject(error);
+        });
+        deferred.resolve(SaltyTrack.currentFight);
+    }
+    return deferred;
+};
+
+function checkWinner() {
+    return null;
+}
+
+
+function updateSalty() {
+    getState()
+        .then(updateState)
+
+}
+
+function getState() {
+}
+
+function getZData() {
+}
+
+function isNewFight(status) {
+
+}
+
+function updateState(state) {
+
+}
+
+function performRequest() {
     request('https://www.saltybet.com/zdata.json', function (error, response, body) {
         body = JSON.parse(body);
         if (player1 != body.p1name || player2 != body.p2name) {
@@ -18,17 +100,11 @@ function performRequest() {
             finished = false;
             player1 = body.p1name;
             player2 = body.p2name;
-            queries.createFight(player1, player2).then(function (fight) {
-                currentFightObj = fight;
-                deferred.resolve(currentFightObj);
-            }, function (error) {
-                console.log(error);
-                deferred.reject(error);
-            });
+
             return;
         }
-        var player1Total = body.p1total.replaceAll(',','');
-        var player2Total = body.p2total.replaceAll(',','');
+        var player1Total = body.p1total.replaceAll(',', '');
+        var player2Total = body.p2total.replaceAll(',', '');
         var winner = null;
         if (body.status == "1") {
             winner = player1;

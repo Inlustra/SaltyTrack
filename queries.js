@@ -29,12 +29,13 @@ function createPlayer(name, deferred) {
     return deferred.promise;
 }
 
-function createFight(red, blue, amount) {
+function createFight(red, blue, status) {
     return Q.all([getOrCreatePlayer(blue), getOrCreatePlayer(red)])
         .spread(function (bluePlayer, redPlayer) {
             return models.Fight.create({
                 redPlayerId: redPlayer.id,
-                bluePlayerId: bluePlayer.id
+                bluePlayerId: bluePlayer.id,
+                status: status
             });
         });
 }

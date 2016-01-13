@@ -37,6 +37,7 @@ var Fight = sequelize.define('Fight', {
     redPlayerId: {type: Sequelize.INTEGER, defaultValue: null, allowNull: true},
     bluePlayerId: {type: Sequelize.INTEGER, defaultValue: null, allowNull: true},
     winningPlayerId: {type: Sequelize.INTEGER, defaultValue: null, allowNull: true},
+    status: Sequelize.STRING,
     duration: {
         type: Sequelize.VIRTUAL,
         get: function () {
