@@ -61,3 +61,18 @@
 .demo-footer .mdl-mini-footer--link-list a {
     font-size: 13px;
 }
+
+.strikethrough-red::after {
+    content:'';
+    display:block;
+    position:absolute;
+    top:50%;
+    height:10px;
+    margin-top:-5px; //half height
+width:90%;
+    left:50%;
+    margin-left:-45%; //half width
+background:#D24335;
+    transform:rotate(-10deg);
+    opacity:0.9;
+}
