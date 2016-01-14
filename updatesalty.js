@@ -1,19 +1,117 @@
 var request = require('request');
-var models = require('sequelize');
 var Sequelize = require('sequelize');
 var queries = require('./queries');
 var Q = require('q');
 
-var player1, player2, currentFightObj, doStop = false, finished = false;
 String.prototype.replaceAll = function (find, replace) {
     var str = this;
     return str.replace(new RegExp(find, 'g'), replace);
 };
 
+function SaltyState() {
+    this.id = null;
+    this.redPlayer = {};
+    this.bluePlayer = {};
+    this.redPlayerAmount = null;
+    this.bluePlayerAmount = null;
+    this.createdAt = null;
+    this.finishedAt = null;
+    this.status = null;
+
+    this.setRedPlayer = function (name) {
+        var deferred = Q.defer();
+        var that = this;
+        queries.getPlayer(name)
+            .then(function (player) {
+                that.redPlayer = player.dataValues;
+                deferred.resolve();
+            });
+        return deferred.promise;
+    };
+
+    this.setBluePlayer = function (name) {
+        var deferred = Q.defer();
+        var that = this;
+        queries.getPlayer(name)
+            .then(function (player) {
+                that.bluePlayer = player.dataValues;
+                deferred.resolve();
+            });
+        return deferred.promise;
+    };
+
+    this.getWinner = function () {
+        if (this.status == "1") {
+            return this.redPlayer.id;
+        } else if (this.status == "2") {
+            return this.bluePlayer.id;
+        }
+        return null;
+    };
+
+    this.getWinnerId = function () {
+        var winner = this.getWinner();
+        return winner ? winner.id : null;
+    };
+
+    this.isEnded = function () {
+        return this.finishedAt != null;
+    };
+
+    this.endMatch = function () {
+        this.finishedAt = new Date();
+        console.info("Ended fight!");
+    };
+
+    this.isSameFight = function (fight) {
+        return fight.redPlayer.id == this.redPlayer.id && this.redPlayer.id != null
+            && fight.bluePlayer.id == this.bluePlayer.id && this.bluePlayer.id != null;
+    };
+
+    this.update = function (fight) {
+        this.redPlayerAmount = fight.redPlayerAmount;
+        this.bluePlayerAmount = fight.bluePlayerAmount;
+        this.status = fight.status;
+        if (this.isEnded()) {
+            return;
+        }
+        if (this.getWinner() == null) {
+            return;
+        }
+        this.endMatch();
+    };
+
+    this.toDatabase = function () {
+        return {
+            id: this.id,
+            redPlayerId: this.redPlayer.id,
+            bluePlayerId: this.bluePlayer.id,
+            winningPlayerId: this.getWinnerId(),
+            createdAt: this.createdAt,
+            redPlayerAmount: this.redPlayerAmount,
+            bluePlayerAmount: this.bluePlayerAmount,
+            finishedAt: this.finishedAt,
+            status: this.status
+        };
+    };
+}
+
+SaltyState.fromJSON = function (fight) {
+    var promise = Q.defer();
+    var state = new SaltyState();
+    state.createdAt = new Date();
+    state.status = fight.status;
+    state.redPlayerAmount = fight.p1total.replaceAll(',', '');
+    state.bluePlayerAmount = fight.p2total.replaceAll(',', '');
+    Q.all([state.setRedPlayer(fight.p1name), state.setBluePlayer(fight.p2name)])
+        .then(function () {
+            promise.resolve(state);
+        });
+    return promise.promise;
+};
+
 function SaltyTrack() {
-    this.player1 = null;
-    this.player2 = null;
-    this.currentFight = null;
+    this.state = new SaltyState();
 }
 
 SaltyTrack.prototype.getState = function () {
@@ -21,153 +119,50 @@ SaltyTrack.prototype.getState = function () {
     request('https://www.saltybet.com/state.json', function (error, response, body) {
         deferred.resolve(JSON.parse(body));
     });
-    return deferred;
-};
-
-SaltyTrack.prototype.transformState = function (fight) {
-    return {
-        status: fight.status,
-        redPlayerAmount: body.p1total.replaceAll(',', ''),
-        bluePlayerAmount: body.p2total.replaceAll(',', '')
-    };
+    return deferred.promise;
 };
 
 SaltyTrack.prototype.getZData = function () {
     var deferred = Q.defer();
     request('https://www.saltybet.com/zdata.json', function (error, response, body) {
-        body.p1total = body.p1total.replaceAll(',', '');
-        body.p2total = body.p2total.replaceAll(',', '');
         deferred.resolve(JSON.parse(body));
     });
-    return deferred;
+    return deferred.promise;
 };
 
 SaltyTrack.prototype.update = function () {
-    Q.all(this.getState())
-        .then(this.getFight)
-        .then(this.checkWinner);
-};
-
-SaltyTrack.prototype.getFight = function (state) {
-    var deferred = Q.defer();
     var that = this;
-    if (that.player1 != state.p1name || that.player2 != state.p2name) {
-        queries.createFight(player1, player2, state.status).then(function (fight) {
-            that.player1 = state.p1name;
-            that.player2 = state.p2name;
-            that.currentFight = fight;
-            deferred.resolve(that.currentFight);
-        }, function (error) {
-            console.log(error);
-            deferred.reject(error);
-        });
-    } else {
-        SaltyTrack.currentFight.update(updating).then(function (currentFight) {
-            deferred.resolve(currentFight);
-        }, function (error) {
-            console.log(error);
-            deferred.reject(error);
-        });
-        deferred.resolve(SaltyTrack.currentFight);
-    }
-    return deferred;
-};
-
-function checkWinner() {
-    return null;
-}
-
-
-function updateSalty() {
-    getState()
-        .then(updateState)
-
-}
-
-function getState() {
-}
-
-function getZData() {
-}
-
-function isNewFight(status) {
-
-}
-
-function updateState(state) {
-
-}
-
-function performRequest() {
-    request('https://www.saltybet.com/zdata.json', function (error, response, body) {
-        body = JSON.parse(body);
-        if (player1 != body.p1name || player2 != body.p2name) {
-            console.log("NEW FIGHT: Red: " + body.p1name + "/" + body.p1total + " Blue: " + body.p2name + "/" + body.p2total);
-            finished = false;
-            player1 = body.p1name;
-            player2 = body.p2name;
-
-            return;
-        }
-        var player1Total = body.p1total.replaceAll(',', '');
-        var player2Total = body.p2total.replaceAll(',', '');
-        var winner = null;
-        if (body.status == "1") {
-            winner = player1;
-        } else if (body.status == "2") {
-            winner = player2;
-        }
-        var updating = {
-            redPlayerAmount: player1Total,
-            bluePlayerAmount: player2Total
-        };
-        if (winner != null) {
-            if (!finished) {
-                updating.finishedAt = Sequelize.fn('NOW');
-                finished = true;
+    this.getState()
+        .then(SaltyState.fromJSON)
+        .then(function (json) {
+            if (that.state.isSameFight(json)) {
+                that.state.update(json);
+            } else {
+                that.state = json;
             }
-            queries.getPlayer(winner).then(function (winningPlayer) {
-                updating.winningPlayerId = winningPlayer.id;
-                currentFightObj.update(updating).then(function (currentFight) {
-                    deferred.resolve(currentFight);
-                }, function (error) {
-                    console.log(error);
-                    deferred.reject(error);
-                });
-            });
-        } else {
-            currentFightObj.update(updating).then(function (currentFight) {
-                deferred.resolve(currentFight);
-            }, function (error) {
-                console.log(error);
-                deferred.reject(error);
-            });
-        }
-        console.log("Updating totals: " + body.p1name + "/" + body.p1total + " Blue: " + body.p2name + "/" + body.p2total + "" + (winner !== null ? (" WINNER: " + (winner)) : ""));
-
-    });
-    return deferred.promise;
-}
-
-function update() {
-    performRequest().then(function (fight) {
-        if (!doStop)
-            setTimeout(update, 5000);
-    }, function (error) {
-        console.log(error);
-        update();
-    });
-}
-
-function stop() {
-    doStop = true;
-}
-
-module.exports = {
-    start: update,
-    stop: stop,
-    updateFight: performRequest,
-    getCurrentFight: function () {
-        return currentFightObj;
-    }
+            return Q.when(that.state.toDatabase());
+        })
+        .then(function (data) {
+            if (data.id != null) {
+                queries.updateFight(data);
+                console.log("Updated the current fight between " + that.state.redPlayer.name + " and " + that.state.bluePlayer.name);
+                return Q.when(data);
+            } else {
+                console.log("Created new fight between " + that.state.redPlayer.name + " and " + that.state.bluePlayer.name);
+                return queries.createFight(data);
+            }
+        })
+        .then(function (database) {
+            that.state.id = database.id;
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
 };
+
+SaltyTrack.prototype.start = function () {
+    setInterval(this.update.bind(this), 3000);
+};
+
+
+module.exports = new SaltyTrack();

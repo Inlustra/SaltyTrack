@@ -29,15 +29,13 @@ function createPlayer(name, deferred) {
     return deferred.promise;
 }
 
-function createFight(red, blue, status) {
-    return Q.all([getOrCreatePlayer(blue), getOrCreatePlayer(red)])
-        .spread(function (bluePlayer, redPlayer) {
-            return models.Fight.create({
-                redPlayerId: redPlayer.id,
-                bluePlayerId: bluePlayer.id,
-                status: status
-            });
-        });
+function createFight(data) {
+    return models.Fight.create(data);
+}
+
+
+function updateFight(data) {
+    return models.Fight.update(data, {where: {id: data.id}});
 }
 
 function currentFight() {
@@ -98,6 +96,7 @@ function playerRoundup(player) {
 
 module.exports = {
     createFight: createFight,
+    updateFight: updateFight,
     getPlayer: getOrCreatePlayer,
     currentFight: currentFight,
     getPlayerById: getPlayer,
