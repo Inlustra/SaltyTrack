@@ -1,4 +1,4 @@
-var models = require('./models');
+var models = require('./models/models');
 var queries = require('./queries');
 var updatesalty = require('./updatesalty');
 var http = require('./httproute');

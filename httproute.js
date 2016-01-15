@@ -3,7 +3,7 @@ var cors = require('cors')
 var app = express();
 var updatesalty = require('./updatesalty');
 var queries = require('./queries');
-var models = require('./models');
+var models = require('./models/models');
 
 var Q = require('q');
 

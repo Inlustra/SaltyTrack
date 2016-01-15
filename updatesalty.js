@@ -96,7 +96,7 @@ function SaltyState() {
     };
 }
 
-SaltyState.fromJSON = function (fight) {
+SaltyState.toState = function (fight) {
     var promise = Q.defer();
     var state = new SaltyState();
     state.createdAt = new Date();
@@ -133,7 +133,7 @@ SaltyTrack.prototype.getZData = function () {
 SaltyTrack.prototype.update = function () {
     var that = this;
     this.getState()
-        .then(SaltyState.fromJSON)
+        .then(SaltyState.toState)
         .then(function (json) {
             if (that.state.isSameFight(json)) {
                 that.state.update(json);

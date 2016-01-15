@@ -1,4 +1,4 @@
-var models = require('./models');
+var models = require('./models/models');
 var Q = require('q');
 
 function getOrCreatePlayer(name) {
