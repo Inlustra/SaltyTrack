@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = function (Sequelize, DataTypes) {
-    Sequelize.define('Player', {
+    var Player = Sequelize.define('Player', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -20,6 +20,15 @@ module.exports = function (Sequelize, DataTypes) {
                 unique: true,
                 fields: ['name']
             }
-        ]
+        ],
+        classMethods: {
+            associate: function (models) {
+                Player.hasMany(models.Fight, {as: 'RedPlayer', foreignKey: 'redPlayerId'});
+                Player.hasMany(models.Fight, {as: 'BluePlayer', foreignKey: 'bluePlayerId'});
+                Player.hasMany(models.Fight, {as: 'WinningPlayer', foreignKey: 'winningPlayerId'});
+            }
+        }
     });
+
+    return Player;
 };

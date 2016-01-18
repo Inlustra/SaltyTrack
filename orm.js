@@ -1,4 +1,4 @@
-var orm 		= require('sequelize-singleton');
+var orm = require('sequelize-singleton');
 orm.discover = ['/models'];
 orm.connect('SaltyTrack', 'user', 'gaN4myhRe6', {
     host: 'box.thenairn.com',
