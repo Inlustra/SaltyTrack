@@ -1,7 +1,6 @@
-var request = require('request');
-var Sequelize = require('sequelize');
-var queries = require('./queries');
-var Q = require('q');
+var request = require('request-promise');
+var Promise = require("bluebird");
+var orm = require('sequelize-connect');
 
 String.prototype.replaceAll = function (find, replace) {
     var str = this;
@@ -19,32 +18,36 @@ function SaltyState() {
     this.status = null;
 
     this.setRedPlayer = function (name) {
-        var deferred = Q.defer();
+        var deferred = Promise.pending();
         var that = this;
-        queries.getPlayer(name)
+        orm.models.Player.getOrCreate(name)
             .then(function (player) {
                 that.redPlayer = player.dataValues;
                 deferred.resolve();
-            });
+            }).catch(function (error) {
+            console.trace(error);
+        });
         return deferred.promise;
     };
 
     this.setBluePlayer = function (name) {
-        var deferred = Q.defer();
+        var deferred = Promise.pending();
         var that = this;
-        queries.getPlayer(name)
+        orm.models.Player.getOrCreate(name)
             .then(function (player) {
                 that.bluePlayer = player.dataValues;
                 deferred.resolve();
-            });
+            }).catch(function (error) {
+            console.trace(error);
+        });
         return deferred.promise;
     };
 
     this.getWinner = function () {
         if (this.status == "1") {
-            return this.redPlayer.id;
+            return this.redPlayer;
         } else if (this.status == "2") {
-            return this.bluePlayer.id;
+            return this.bluePlayer;
         }
         return null;
     };
@@ -97,16 +100,18 @@ function SaltyState() {
 }
 
 SaltyState.toState = function (fight) {
-    var promise = Q.defer();
+    var promise = Promise.pending();
     var state = new SaltyState();
     state.createdAt = new Date();
     state.status = fight.status;
     state.redPlayerAmount = fight.p1total.replaceAll(',', '');
     state.bluePlayerAmount = fight.p2total.replaceAll(',', '');
-    Q.all([state.setRedPlayer(fight.p1name), state.setBluePlayer(fight.p2name)])
+    Promise.all([state.setRedPlayer(fight.p1name), state.setBluePlayer(fight.p2name)])
         .then(function () {
             promise.resolve(state);
-        });
+        }).catch(function (error) {
+        console.trace(error);
+    });
     return promise.promise;
 };
 
@@ -115,17 +120,21 @@ function SaltyTrack() {
 }
 
 SaltyTrack.prototype.getState = function () {
-    var deferred = Q.defer();
-    request('https://www.saltybet.com/state.json', function (error, response, body) {
+    var deferred = Promise.pending();
+    request('https://www.saltybet.com/state.json').then(function (body) {
         deferred.resolve(JSON.parse(body));
+    }).catch(function (error) {
+        console.trace(error);
     });
     return deferred.promise;
 };
 
 SaltyTrack.prototype.getZData = function () {
-    var deferred = Q.defer();
-    request('https://www.saltybet.com/zdata.json', function (error, response, body) {
+    var deferred = Promise.pending();
+    request('https://www.saltybet.com/zdata.json').then(function (body) {
         deferred.resolve(JSON.parse(body));
+    }).catch(function (error) {
+        console.trace(error);
     });
     return deferred.promise;
 };
@@ -140,24 +149,19 @@ SaltyTrack.prototype.update = function () {
             } else {
                 that.state = json;
             }
-            return Q.when(that.state.toDatabase());
+            return Promise.resolve(that.state.toDatabase());
         })
         .then(function (data) {
             if (data.id != null) {
-                queries.updateFight(data);
-                console.log("Updated the current fight between " + that.state.redPlayer.name + " and " + that.state.bluePlayer.name);
-                return Q.when(data);
+                orm.models.Fight.updateData(data);
+                return Promise.resolve(data);
             } else {
-                console.log("Created new fight between " + that.state.redPlayer.name + " and " + that.state.bluePlayer.name);
-                return queries.createFight(data);
+                return orm.models.Fight.create(data);
             }
         })
         .then(function (database) {
             that.state.id = database.id;
         })
-        .catch(function (error) {
-            console.error(error);
-        });
 };
 
 SaltyTrack.prototype.start = function () {

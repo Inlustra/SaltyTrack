@@ -1,5 +1,7 @@
-modules.exports = function (Sequelize, DataTypes) {
-    var Fight = Sequelize.define('Fight', {
+"use strict";
+
+module.exports = function (sequelize, DataTypes) {
+    var Fight = sequelize.define('Fight', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -68,6 +70,24 @@ modules.exports = function (Sequelize, DataTypes) {
                     as: 'WinningPlayer',
                     foreignKey: 'winningPlayerId'
                 });
+            },
+            updateData: function (data) {
+                return this.update(data, {where: {id: data.id}});
+            },
+            getCurrent: function () {
+                return this.find({
+                    order: [['createdAt', 'DESC']]
+                })
+            },
+            findById: function (id) {
+                return this.find({
+                    where: {
+                        id: id
+                    }
+                })
+            },
+            getIncompleteMatches: function () {
+                return this.scope({method: ['nowinner']});
             }
         }
     });

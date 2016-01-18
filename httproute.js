@@ -1,18 +1,18 @@
 var express = require('express');
-var cors = require('cors')
+var cors = require('cors');
 var app = express();
 var updatesalty = require('./updatesalty');
-var queries = require('./queries');
-var models = require('./models/models');
+var Promise = require("bluebird");
 
-var Q = require('q');
-
+var orm = require('sequelize-connect');
+var Player = orm.models.Player;
+var Fight = orm.models.Fight;
 
 app.use(cors());
 app.use(express.static('public'));
 app.get('/player/:id', function (req, res) {
     console.log(req.params.id);
-    Q.all([queries.getPlayerById(req.params.id), queries.getPlayerRoundup(req.params.id)])
+    Promise.all([Player.findById(req.params.id), Player.getRoundup(req.params.id)])
         .spread(function (player, data) {
             res.json({
                 id: player.id,
@@ -22,19 +22,19 @@ app.get('/player/:id', function (req, res) {
         });
 });
 app.get('/status', function (req, res) {
-    queries.currentFight().then(function (fight) {
-        Q.all([queries.getPlayerById(fight.redPlayerId),
-                queries.getPlayerById(fight.bluePlayerId)])
+    Fight.getCurrent().then(function (fight) {
+        Promise.all([Player.findById(fight.redPlayerId),
+                Player.findById(fight.bluePlayerId)])
             .spread(function (redPlayer, bluePlayer) {
-                return Q.all([queries.getPlayerWins(redPlayer.id).count(),
-                        queries.getPlayerWins(bluePlayer.id).count(),
-                        queries.getPlayerMatches(bluePlayer.id),
-                        queries.getPlayerMatches(redPlayer.id),
-                        queries.getPlayerRoundup(redPlayer.id),
-                        queries.getPlayerRoundup(bluePlayer.id)])
-                    .spread(function (redPlayerWins, bluePlayerWins, bluePlayerMatches, redPlayerMatches,
-                                      redPlayerRoundup,
-                                      bluePlayerRoundup) {
+                return Promise.all([redPlayer.getWins().count(),
+                        bluePlayer.getWins().count(),
+                        redPlayer.getMatches(),
+                        bluePlayer.getMatches(),
+                        redPlayer.getRoundup(),
+                        bluePlayer.getRoundup()])
+                    .spread(function (redPlayerWins, bluePlayerWins,
+                                      redPlayerMatches, bluePlayerMatches,
+                                      redPlayerRoundup, bluePlayerRoundup) {
 
                         var data = {
                             currentFight: fight,
