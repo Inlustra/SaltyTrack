@@ -1,7 +1,7 @@
 var orm = require('sequelize-connect');
-var SaltyScraper = require('./saltyscraper');
+//var SaltyScraper = require('./saltyscraper');
 
-SaltyScraper.scrape(__dirname + '/todo.html');
+//SaltyScraper.scrape(__dirname + '/todo.html');
 
 orm.discover = [__dirname+'/models'];
 orm.connect('SaltyTrack', 'user', 'gaN4myhRe6', {
