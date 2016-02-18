@@ -9,14 +9,14 @@ orm.connect('SaltyTrack', 'user', 'gaN4myhRe6', {
     dialect: 'mysql',
     logging: console.log
 }).then(function () {
-    //orm.models = orm.sequelize.models;
-   // var updatesalty = require('./updatesalty');
-    //var http = require('./httproute');
-   // orm.models.Fight.getIncompleteMatches().findAll().then(function (fights) {
-    //    fights.forEach(function (fight) {
-    //        fight.destroy();
-    //    })
-    //});
-    //updatesalty.start();
-    //http.start();
+    orm.models = orm.sequelize.models;
+    var updatesalty = require('./updatesalty');
+    var http = require('./httproute');
+    orm.models.Fight.getIncompleteMatches().findAll().then(function (fights) {
+        fights.forEach(function (fight) {
+            fight.destroy();
+        })
+    });
+    updatesalty.start();
+    http.start();
 });

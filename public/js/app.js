@@ -1,3 +1,4 @@
 var saltyTrack = angular.module('SaltyTrack', [
-    'ui.router'
+    'ui.router',
+    'angular-entity-system'
 ]);

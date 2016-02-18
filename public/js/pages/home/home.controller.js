@@ -1,4 +1,4 @@
-saltyTrack.controller('HomeController', ['$scope', '$http', '$interval', function ($scope, $http, $interval) {
+saltyTrack.controller('HomeController', ['$scope', '$interval', 'EntityAPI', 'Status', function ($scope, $interval, EntityAPI, Status) {
     $scope.data = {};
     $scope.players = {
         red: {},
@@ -6,12 +6,14 @@ saltyTrack.controller('HomeController', ['$scope', '$http', '$interval', functio
     };
 
     function refresh() {
-        $http.get('/status').then(function (data) {
-            $scope.data = data.data;
+        EntityAPI.get('/status').singular().as(Status).then(function (data) {
+            console.log(data);
+            $scope.data = data;
         });
     }
+
     $scope.Math = window.Math;
 
     refresh();
-    $interval(refresh, 3000, 0);
+    $interval(refresh, 30000, 0);
 }]);

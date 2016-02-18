@@ -70,9 +70,9 @@
                         mdl-cell--stretch
                         mdl-shadow--1dp" ng-repeat="match in data.red.matches">
                     <div class="mdl-card--expand p-20">
-                        <h3 class="t-center mdl-color-text--white"><span ng-class="[{'strike': match.WonGame}]">{{match.OpposingPlayerName}}</span> / <span
-                                class="mdl-layout--large-screen-only"
-                                ng-class="[{'strike': !match.WonGame}]">  {{data.red.player.name}}</span>
+                        <h3 class="t-center mdl-color-text--white"><span ng-class="[{'strike': match.WonGame}]">{{match.OpposingPlayerName}}</span>
+                            <span class="mdl-layout--large-screen-only"
+                                  ng-class="[{'strike': !match.WonGame}]"> / {{data.red.player.name}}</span>
                         </h3>
                     </div>
                     <div class="mdl-card__actions mdl-card--border">
@@ -95,8 +95,10 @@
                         mdl-cell--stretch
                         mdl-shadow--1dp" ng-repeat="match in data.blue.matches">
                     <div class="mdl-card--expand p-20">
-                        <h3 class="t-center mdl-color-text--white"><span ng-class="[{'strike': match.WonGame}]">{{match.OpposingPlayerName}}</span> / <span
-                                class="mdl-layout--large-screen-only" ng-class="[{'strike': !match.WonGame}]"> {{data.blue.player.name}}</span></h3>
+                        <h3 class="t-center mdl-color-text--white"><span ng-class="[{'strike': match.WonGame}]">{{match.OpposingPlayerName}}</span>
+                             <span
+                                    class="mdl-layout--large-screen-only" ng-class="[{'strike': !match.WonGame}]">/ {{data.blue.player.name}}</span>
+                        </h3>
                     </div>
                     <div class="mdl-card__actions mdl-card--border">
                         <i class="material-icons mdl-color-text--white">attach_money</i>
